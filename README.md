@@ -33,7 +33,7 @@ helm dependency update
 kubectl create namespace dev
 helm install bankapp . -f values.yaml -n dev
 ```
-
+![helm Image](pics/helm.png)
 ### 3. Verify Installation
 
 ```bash
@@ -112,6 +112,7 @@ kubectl delete pvc mysql-pvc
 ## Accessing the Application
 
 ![kubectl Image](pics/kubectl.png)
+![app Image](pics/app.png)
 
 ## Troubleshooting
 
