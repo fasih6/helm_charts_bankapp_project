@@ -147,41 +147,6 @@ bankapp.service.type: LoadBalancer
 - Annotation support for AWS ALB/NLB
 - Configurable ports
 
-## Configuration Highlights
-
-### MySQL Configuration
-```yaml
-mysql:
-  enabled: true
-  image: mysql:8
-  database: bankappdb
-  storage:
-    storageClassName: ebs-sc
-    size: 5Gi
-    accessMode: ReadWriteOnce
-  resources:
-    requests: { memory: "500Mi", cpu: "500m" }
-    limits: { memory: "1Gi", cpu: "1" }
-  livenessProbe: { enabled: true, initialDelaySeconds: 30 }
-  readinessProbe: { enabled: true, initialDelaySeconds: 10 }
-```
-
-### BankApp Configuration
-```yaml
-bankapp:
-  enabled: true
-  image: fasih6/bankapp:v1
-  replicas: 2
-  service:
-    type: LoadBalancer
-    port: 80
-    targetPort: 8080
-  initContainer:
-    enabled: true  # Waits for MySQL
-  livenessProbe: { enabled: true, path: /actuator/health }
-  readinessProbe: { enabled: true, path: /actuator/health }
-```
-
 ## Deployment Workflow
 
 ### Development
@@ -253,14 +218,5 @@ kubectl exec -it <pod> -n prod -- sh
 kubectl port-forward svc/bankapp-service 8080:80 -n prod
 ```
 
-## Next Steps
-
-1. Deploy to development environment
-2. Test all functionality
-3. Configure external secrets management
-4. Set up monitoring and alerts
-5. Implement CI/CD pipeline
-6. Configure backup strategy
-7. Deploy to production
 
 This improved Helm chart is production-ready and follows Kubernetes and Helm best practices!
