@@ -110,6 +110,9 @@ kubectl delete pvc mysql-pvc
 ```
 
 ## Accessing the Application
+```bash
+kubectl get all -n dev
+```
 
 ![kubectl Image](pics/kubectl.png)
 ![app Image](pics/app.png)
