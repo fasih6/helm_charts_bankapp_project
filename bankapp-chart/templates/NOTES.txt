@@ -1,0 +1,55 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
+
+{{- if .Values.bankapp.enabled }}
+
+1. Get the application URL by running these commands:
+{{- if eq .Values.bankapp.service.type "LoadBalancer" }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status by running:
+        
+  $ kubectl get svc --namespace {{ .Values.namespace }} -w {{ .Values.bankapp.serviceName }}
+  
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Values.namespace }} {{ .Values.bankapp.serviceName }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "BankApp URL: http://$SERVICE_IP:{{ .Values.bankapp.service.port }}"
+
+{{- else if eq .Values.bankapp.service.type "ClusterIP" }}
+  $ kubectl port-forward --namespace {{ .Values.namespace }} svc/{{ .Values.bankapp.serviceName }} {{ .Values.bankapp.service.port }}:{{ .Values.bankapp.service.targetPort }}
+  echo "Visit http://127.0.0.1:{{ .Values.bankapp.service.port }} to use your application"
+{{- end }}
+
+2. Check the status of your pods:
+  $ kubectl get pods --namespace {{ .Values.namespace }} -l "app={{ .Values.bankapp.name }}"
+
+3. View application logs:
+  $ kubectl logs --namespace {{ .Values.namespace }} -l "app={{ .Values.bankapp.name }}" -f
+
+{{- end }}
+
+{{- if .Values.mysql.enabled }}
+
+4. Connect to MySQL (from within the cluster):
+  $ kubectl run mysql-client --rm -it --restart=Never --image=mysql:8 --namespace {{ .Values.namespace }} \
+    -- mysql -h {{ .Values.mysql.serviceName }} -u root -p{{ .Values.mysql.rootPassword }} {{ .Values.mysql.database }}
+
+5. Check MySQL status:
+  $ kubectl get pods --namespace {{ .Values.namespace }} -l "app={{ .Values.mysql.name }}"
+
+{{- end }}
+
+⚠️  SECURITY WARNING:
+  The MySQL root password is stored as a plain text in values.yaml.
+  For production environments, please use external secret management solutions like:
+  - AWS Secrets Manager
+  - HashiCorp Vault
+  - Sealed Secrets
+  - External Secrets Operator
+
+📚 Documentation:
+  For more information about this chart, visit the project repository.

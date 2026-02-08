@@ -1,0 +1,28 @@
+# --------------------
+# Terraform (eks_setup)
+# --------------------
+eks_setup/.terraform/
+eks_setup/terraform.tfstate
+eks_setup/terraform.tfstate.*
+eks_setup/crash.log
+eks_setup/override.tf
+eks_setup/override.tf.json
+eks_setup/*_override.tf
+eks_setup/*.tfvars
+eks_setup/*.tfvars.json
+
+# --------------------
+# Helm (bankapp-chart)
+# --------------------
+bankapp-chart/charts/
+bankapp-chart/*.tgz
+bankapp-chart/helmfile.lock
+bankapp-chart/secrets.yaml
+
+# --------------------
+# OS / IDE files
+# --------------------
+.DS_Store
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,90 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mysql.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.mysql.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.mysql.name }}
+      release: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mysql.name }}
+        release: {{ .Release.Name }}
+        {{- with .Values.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+      - name: {{ .Values.mysql.name }}
+        image: {{ .Values.mysql.image }}
+        imagePullPolicy: {{ .Values.mysql.imagePullPolicy }}
+        args:
+        {{- range .Values.mysql.args }}
+          - {{ . | quote }}
+        {{- end }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.mysql.secretName }}
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.mysql.configName }}
+              key: MYSQL_DATABASE
+        ports:
+        - containerPort: {{ .Values.mysql.service.port }}
+          name: mysql
+          protocol: TCP
+        resources:
+          {{- toYaml .Values.mysql.resources | nindent 10 }}
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        {{- if .Values.mysql.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"
+          initialDelaySeconds: {{ .Values.mysql.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.mysql.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.mysql.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.mysql.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.mysql.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.mysql.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"
+          initialDelaySeconds: {{ .Values.mysql.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.mysql.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.mysql.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.mysql.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.mysql.readinessProbe.failureThreshold }}
+        {{- end }}
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.mysql.pvcName }}
+{{- end }}

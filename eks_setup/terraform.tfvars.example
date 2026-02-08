@@ -1,0 +1,19 @@
+# Example Terraform Variables
+# Copy this file to terraform.tfvars and customize for your environment
+
+# AWS region where resources will be created
+aws_region = "us-east-1"
+
+# Name of your existing SSH key pair in AWS
+ssh_key_name = "shack_keypair_1"
+
+# IMPORTANT: Restrict SSH access to your IP address for security
+# Find your IP: curl ifconfig.me
+ssh_allowed_cidr_blocks = ["YOUR.IP.ADDRESS/32"]
+# Example: ssh_allowed_cidr_blocks = ["203.0.113.42/32"]
+
+# Kubernetes version - check for latest stable version
+kubernetes_version = "1.28"
+
+# EBS CSI driver version - check AWS docs for latest
+ebs_csi_driver_version = "v1.26.1-eksbuild.1"

@@ -1,0 +1,142 @@
+
+
+# MySQL Configuration
+mysql:
+  enabled: true
+  name: mysql
+  secretName: mysql-secret
+  configName: mysql-config
+  pvcName: mysql-pvc
+  serviceName: mysql-service
+  image: mysql:8.0.36
+  imagePullPolicy: IfNotPresent
+  database: bankappdb
+  rootPassword: "Test@123"  # WARNING: Use external secret management in production
+  
+  # Storage configuration
+  storage:
+    storageClassName: ebs-sc
+    size: 5Gi
+    accessMode: ReadWriteOnce
+  
+  # Resource limits
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 3306
+  
+  # MySQL specific settings
+  args:
+    - "--character-set-server=utf8mb4"
+    - "--collation-server=utf8mb4_unicode_ci"
+  
+  # Liveness and readiness probes
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
+# BankApp Configuration
+bankapp:
+  enabled: true
+  name: bankapp
+  serviceName: bankapp-service
+  image: fasih6/bankapp:v1
+  imagePullPolicy: IfNotPresent
+  replicas: 2
+  
+  # Resource limits
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+  
+  # Service configuration
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 8080
+    annotations: {}
+      # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  
+  # Environment variables
+  env:
+    springDatasourceUrl: "jdbc:mysql://mysql-service:3306/bankappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+    springDatasourceUsername: root
+  
+  # Health checks
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  
+  # Init container to wait for MySQL
+  initContainer:
+    enabled: true
+    image: busybox:1.35
+    command:
+      - sh
+      - -c
+      - |
+        until nc -z mysql-service 3306; do
+          echo "Waiting for MySQL to be ready..."
+          sleep 5
+        done
+        echo "MySQL is ready!"
+
+# Storage Class Configuration
+storageClass:
+  enabled: true
+  name: ebs-sc
+  provisioner: ebs.csi.aws.com
+  type: gp3
+  fsType: ext4
+  reclaimPolicy: Retain
+  volumeBindingMode: WaitForFirstConsumer
+  allowVolumeExpansion: true
+  parameters:
+    encrypted: "true"
+
+# Common labels
+labels:
+  environment: production
+  managedBy: helm

@@ -1,0 +1,81 @@
+{{- if .Values.bankapp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.bankapp.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.bankapp.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.bankapp.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.bankapp.name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.bankapp.name }}
+        release: {{ .Release.Name }}
+        {{- with .Values.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.bankapp.initContainer.enabled }}
+      initContainers:
+      - name: wait-for-mysql
+        image: {{ .Values.bankapp.initContainer.image }}
+        command:
+        {{- range .Values.bankapp.initContainer.command }}
+          - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.bankapp.name }}
+        image: {{ .Values.bankapp.image }}
+        imagePullPolicy: {{ .Values.bankapp.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.bankapp.service.targetPort }}
+          name: http
+          protocol: TCP
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: {{ .Values.bankapp.env.springDatasourceUrl | quote }}
+        - name: SPRING_DATASOURCE_USERNAME
+          value: {{ .Values.bankapp.env.springDatasourceUsername | quote }}
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.mysql.secretName }}
+              key: MYSQL_ROOT_PASSWORD
+        resources:
+          {{- toYaml .Values.bankapp.resources | nindent 10 }}
+        {{- if .Values.bankapp.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.bankapp.livenessProbe.httpGet.path }}
+            port: {{ .Values.bankapp.livenessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.bankapp.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.bankapp.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.bankapp.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.bankapp.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.bankapp.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.bankapp.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.bankapp.readinessProbe.httpGet.path }}
+            port: {{ .Values.bankapp.readinessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.bankapp.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.bankapp.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.bankapp.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.bankapp.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.bankapp.readinessProbe.failureThreshold }}
+        {{- end }}
+{{- end }}
