@@ -25,21 +25,9 @@ bankapp-chart/
     └── bankapp-service.yaml        # BankApp service
 ```
 
-## Key Improvements
+## Key Features
 
-### 1. Fixed Issues from Original Setup
-
-✅ **Fixed Missing Values**
-- Added all missing fields referenced in templates (volumeBindingMode, storage.size, etc.)
-- Corrected image path quote syntax
-- Properly structured nested values
-
-✅ **Fixed Template References**
-- Aligned all template references with values.yaml structure
-- Added proper conditional rendering with `{{- if .Values.*.enabled }}`
-- Fixed storage size reference from `.Values.mysql.storageSize` to `.Values.mysql.storage.size`
-
-### 2. Added Production-Ready Features
+### 1. Added Production-Ready Features
 
 #### Health Checks & Probes
 - **Liveness probes**: Detect and restart unhealthy containers
@@ -62,7 +50,7 @@ bankapp-chart/
 - Security warnings in documentation
 - RBAC-ready label structure
 
-### 3. Enhanced Configuration Management
+### 2. Enhanced Configuration Management
 
 #### Environment-Specific Values
 - **values.yaml**: Base configuration with sensible defaults
@@ -82,7 +70,7 @@ mysql.storage.size: 5Gi
 bankapp.service.type: LoadBalancer
 ```
 
-### 4. Better Labels and Metadata
+### 3. Labels and Metadata
 
 #### Standardized Labels
 - App identification labels
@@ -97,7 +85,7 @@ bankapp.service.type: LoadBalancer
 - Easier troubleshooting
 - Clean separation of concerns
 
-### 5. Documentation & Usability
+### 4. Documentation & Usability
 
 #### README.md
 - Comprehensive installation guide
@@ -119,7 +107,7 @@ bankapp.service.type: LoadBalancer
 - Security warnings
 - Helpful next steps
 
-### 6. Automation & DevOps
+### 5. Automation & DevOps
 
 #### deploy.sh Script
 - Automated deployment workflow
@@ -136,7 +124,7 @@ bankapp.service.type: LoadBalancer
 ./deploy.sh prod status   # Check status
 ```
 
-### 7. Storage Configuration
+### 6. Storage Configuration
 
 #### Enhanced StorageClass
 - EBS CSI driver integration
@@ -146,7 +134,7 @@ bankapp.service.type: LoadBalancer
 - Proper reclaim policy
 - WaitForFirstConsumer binding mode
 
-### 8. Service Configuration
+### 7. Service Configuration
 
 #### MySQL Service
 - ClusterIP for internal access only
@@ -199,16 +187,13 @@ bankapp:
 ### Development
 ```bash
 # 1. Validate
-helm lint bankapp-chart/
+helm lint .
 
 # 2. Test
 ./deploy.sh dev test
 
 # 3. Deploy
 ./deploy.sh dev install
-
-# 4. Access
-kubectl port-forward svc/bankapp-service 8080:80 -n dev
 ```
 
 ### Production
@@ -248,30 +233,6 @@ kubectl get svc bankapp-service -n prod
    - Configure alerts
    - Implement logging
 
-## Testing Checklist
-
-Before deploying to production:
-
-- [ ] Run `helm lint bankapp-chart/`
-- [ ] Test in dev environment first
-- [ ] Verify all pods are running
-- [ ] Test MySQL connectivity
-- [ ] Test application endpoints
-- [ ] Verify PVC is bound
-- [ ] Check resource usage
-- [ ] Test health check endpoints
-- [ ] Verify LoadBalancer access
-- [ ] Review security configurations
-
-## Upgrade Path
-
-From your original setup to this improved version:
-
-1. **Backup existing data** (if any)
-2. **Review new values.yaml** structure
-3. **Update your values** to match new structure
-4. **Test in dev** environment
-5. **Upgrade production** with confidence
 
 ## Support Commands
 
@@ -301,20 +262,5 @@ kubectl port-forward svc/bankapp-service 8080:80 -n prod
 5. Implement CI/CD pipeline
 6. Configure backup strategy
 7. Deploy to production
-
-## Changes from Original
-
-| Original | Improved |
-|----------|----------|
-| Basic values.yaml | Comprehensive with all fields |
-| No health checks | Full health check configuration |
-| No init containers | MySQL wait init container |
-| Fixed namespace | Configurable namespace |
-| Basic labels | Complete label strategy |
-| No documentation | Full docs + deployment guide |
-| Manual deployment | Automated script |
-| Single environment | Multi-environment support |
-| No helpers | Reusable template helpers |
-| Basic templates | Production-ready templates |
 
 This improved Helm chart is production-ready and follows Kubernetes and Helm best practices!
