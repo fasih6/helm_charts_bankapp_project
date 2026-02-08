@@ -5,7 +5,8 @@ A Helm chart for deploying BankApp with MySQL database on Kubernetes (EKS).
 ## Prerequisites
 
 - Kubernetes 
-- Helm 
+- Helm
+- aws cli + eksctl
 - EKS cluster with EBS CSI driver installed
 - kubectl configured to communicate with your cluster
 
