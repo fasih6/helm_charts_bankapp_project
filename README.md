@@ -1,5 +1,3 @@
-# helm_charts_bankapp_project
-
 # BankApp Helm Chart
 
 A Helm chart for deploying BankApp with MySQL database on Kubernetes (EKS).
@@ -7,7 +5,7 @@ A Helm chart for deploying BankApp with MySQL database on Kubernetes (EKS).
 ## Prerequisites
 
 - Kubernetes 
-- Helm
+- Helm 
 - EKS cluster with EBS CSI driver installed
 - kubectl configured to communicate with your cluster
 
@@ -36,17 +34,14 @@ kubectl create namespace dev
 helm install bankapp . -f values.yaml -n dev
 ```
 
-
-
 ### 3. Verify Installation
 
 ```bash
 # Check release status
 helm status bankapp
 
-# Check pods
 kubectl get all -n dev
-
+```
 
 ## Configuration
 
@@ -107,6 +102,7 @@ helm upgrade bankapp ./bankapp-chart --set bankapp.replicas=3
 helm uninstall bankapp -n dev
 
 ```
+
 
 **Note:** PVCs are not automatically deleted. To remove them:
 ```bash
