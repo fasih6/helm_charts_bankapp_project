@@ -63,7 +63,8 @@ helm install bankapp . --dry-run --debug
 ./deploy.sh dev install
 
 # Or manually
-helm install bankapp . -f values-dev.yaml --namespace dev --create-namespace
+kubectl create namespace dev
+helm install bankapp . -f values.yaml -n dev
 ```
 
 ### Step 6: Verify Deployment
@@ -86,68 +87,6 @@ kubectl get pvc -n dev
 kubectl get svc -n dev
 ```
 
-### Step 7: Wait for MySQL to be Ready
-
-```bash
-# Wait for MySQL pod to be ready
-kubectl wait --for=condition=ready pod -l app=mysql -n dev --timeout=300s
-
-# Check MySQL logs
-kubectl logs -l app=mysql -n dev
-```
-
-### Step 8: Wait for BankApp to be Ready
-
-```bash
-# Wait for BankApp pods to be ready
-kubectl wait --for=condition=ready pod -l app=bankapp -n dev --timeout=300s
-
-# Check BankApp logs
-kubectl logs -l app=bankapp -n dev -f
-```
-
-### Step 9: Access the Application
-
-**For Development (ClusterIP):**
-```bash
-# Port forward
-kubectl port-forward svc/bankapp-service 8080:80 -n dev
-
-# Access at http://localhost:8080
-```
-
-**For Production (LoadBalancer):**
-```bash
-# Get LoadBalancer URL
-kubectl get svc bankapp-service -n prod
-
-# Or use this command
-export LB_URL=$(kubectl get svc bankapp-service -n prod -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-echo "Application URL: http://$LB_URL"
-
-# It may take 2-3 minutes for the LoadBalancer to be ready
-```
-
-## Production Deployment
-
-### Deploy to Production
-
-```bash
-# Using deployment script
-./deploy.sh prod install
-
-# Or manually
-helm install bankapp . -f values-prod.yaml --namespace prod --create-namespace
-```
-
-### Verify Production Deployment
-
-```bash
-helm status bankapp --namespace prod
-kubectl get all -n prod
-kubectl get pvc -n prod
-```
-
 ## Upgrade Process
 
 ### Upgrade Development
@@ -155,16 +94,9 @@ kubectl get pvc -n prod
 ```bash
 # Modify values-dev.yaml or templates as needed
 ./deploy.sh dev upgrade
-```
 
-### Upgrade Production (with caution)
-
-```bash
-# Test changes in dev first
-./deploy.sh dev upgrade
-
-# If successful, upgrade prod
-./deploy.sh prod upgrade
+3 Or
+helm upgrade bankapp . -f values.yaml -n dev
 ```
 
 ## Rollback
