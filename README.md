@@ -94,7 +94,7 @@ The following table lists the configurable parameters and their default values.
 helm upgrade bankapp . -f values.yaml -n dev
 
 # Upgrade with specific parameters
-helm upgrade bankapp ./bankapp-chart --set bankapp.replicas=3
+helm upgrade bankapp . --set bankapp.replicas=3
 ```
 
 ## Uninstallation
