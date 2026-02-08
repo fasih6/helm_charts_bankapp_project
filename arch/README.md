@@ -17,7 +17,7 @@ flowchart TB
             BankContainer["Container
             (Java / Node.js)"]
             BankService["Service
-            (ClusterIP / LoadBalancer)"]
+            (LoadBalancer)"]
             ConfigMap["ConfigMap
             App Config"]
             AppSecret["Secret
