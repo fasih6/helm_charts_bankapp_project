@@ -1,3 +1,4 @@
+```mermaid
 graph TB
     subgraph AWS["☁️ AWS Cloud - us-east-1"]
         IGW[("🌐 Internet Gateway<br/>devops1-igw")]
@@ -109,3 +110,4 @@ graph TB
     class ClusterSG,NodeSG sgStyle
     class EBS1,EBS2,EBS3 storageStyle
     class IGW,RT networkStyle
+```
