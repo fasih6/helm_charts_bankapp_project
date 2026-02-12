@@ -19,12 +19,12 @@ variable "ssh_allowed_cidr_blocks" {
 variable "kubernetes_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
-  default     = "1.31"
+  default     = "1.33"
 }
 
 variable "ebs_csi_driver_version" {
   description = "Version of the EBS CSI driver addon"
   type        = string
-  default     = "v1.37.0-eksbuild.1"  # Updated to latest stable version compatible with K8s 1.31
+  default     = "v1.50.1-eksbuild.1"
 }
 
