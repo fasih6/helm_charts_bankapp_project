@@ -87,7 +87,56 @@ aws eks update-kubeconfig --region us-east-1 --name devops1-cluster
 ```bash
 kubectl get nodes
 kubectl get pods -A
+```## 6) Install Ingress‑NGINX controller (v1.13.2)
+
+```bash
+kubectl apply -f \
+  https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/cloud/deploy.yaml
+
+kubectl -n ingress-nginx rollout status deploy/ingress-nginx-controller
+
+# Verify
+kubectl -n ingress-nginx get pods
+kubectl -n ingress-nginx get svc ingress-nginx-controller
 ```
+
+> Once `EXTERNAL-IP`/hostname is assigned on the `ingress-nginx-controller` Service, note it for DNS.
+
+---
+
+### Install cert‑manager (v1.19.0) - (Optional)
+
+```bash
+kubectl apply -f \
+  https://github.com/cert-manager/cert-manager/releases/download/v1.19.0/cert-manager.yaml
+
+# Wait for all three deployments
+kubectl -n cert-manager rollout status deploy/cert-manager
+kubectl -n cert-manager rollout status deploy/cert-manager-cainjector
+kubectl -n cert-manager rollout status deploy/cert-manager-webhook
+
+# Verify
+kubectl -n cert-manager get pods
+```
+
+> Optional next step: create a ClusterIssuer (Let’s Encrypt HTTP‑01) and an Ingress with TLS annotations.
+
+---
+
+###  Quick verification cheatsheet - (Optional)
+
+```bash
+# Nodes ready?
+kubectl get nodes -o wide
+
+# Ingress controller LB hostname
+kubectl -n ingress-nginx get svc ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'; echo
+
+# cert-manager webhook healthy?
+kubectl -n cert-manager get deploy -o wide
+```
+
+---
 
 ## Configuration Details
 
