@@ -89,7 +89,7 @@ kubectl get nodes
 kubectl get pods -A
 ```
 
-## 6) Install Ingress‑NGINX controller (v1.13.2) - (Optional)
+### Install Ingress‑NGINX controller (v1.13.2) - (Optional)
 
 ```bash
 kubectl apply -f \
