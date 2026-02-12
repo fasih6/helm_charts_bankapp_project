@@ -87,7 +87,9 @@ aws eks update-kubeconfig --region us-east-1 --name devops1-cluster
 ```bash
 kubectl get nodes
 kubectl get pods -A
-```## 6) Install Ingress‑NGINX controller (v1.13.2)
+```
+
+## 6) Install Ingress‑NGINX controller (v1.13.2) - (Optional)
 
 ```bash
 kubectl apply -f \
@@ -123,7 +125,7 @@ kubectl -n cert-manager get pods
 
 ---
 
-###  Quick verification cheatsheet - (Optional)
+###  Quick verification cheatsheet
 
 ```bash
 # Nodes ready?
