@@ -92,8 +92,7 @@ kubectl get pods -A
 ### Install Ingress‑NGINX controller (v1.13.2) - (Optional)
 
 ```bash
-kubectl apply -f \
-  https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/cloud/deploy.yaml
 
 kubectl -n ingress-nginx rollout status deploy/ingress-nginx-controller
 
@@ -109,8 +108,7 @@ kubectl -n ingress-nginx get svc ingress-nginx-controller
 ### Install cert‑manager (v1.19.0) - (Optional)
 
 ```bash
-kubectl apply -f \
-  https://github.com/cert-manager/cert-manager/releases/download/v1.19.0/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.0/cert-manager.yaml
 
 # Wait for all three deployments
 kubectl -n cert-manager rollout status deploy/cert-manager
